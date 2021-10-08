@@ -1,13 +1,21 @@
-const { Router } = require('express');
+const express = require('express');
+const morgan = require('morgan');
+const app = express();
 
-const router = new Router();
+// settings
+app.set('port', process.env.PORT || 4000);
 
-router.get('/test', (req, res) => {
-    const data = {
-        name: 'Fazt',
-        website: 'faztweb.com'
-    };
-    res.json(data);
-});  
+// middlewares
+app.use(morgan('dev'));
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 
-module.exports = router;
+// routes
+app.use(require('./routes'));
+app.use('/api/movies', require('./routes/movies'));
+app.use('/api/users', require('./routes/users'));
+
+// starting the server
+app.listen(app.get('port'), () => {
+    console.log(`Server on port ${app.get('port')}`);
+});
